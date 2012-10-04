@@ -11,7 +11,6 @@ var util = require('util');
 
 var context = {}
 context.config = sinon.stub(config);
-context.Controller = Controller;
 context.controllers = {
   controllers: {},
   get: function(item) {
