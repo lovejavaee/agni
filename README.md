@@ -26,7 +26,7 @@ The three main application components are:
 - the **Controller**, which acts as an intermediary between the other two components,
 taking data from the Model and sending it to the View.
 
-A fourth component is optionally available, which is called **Libraries**, and constitute
+A fourth component is optionally available, which agni calls **Libraries**, and constitute
 the _Service_ layer.
 The purpose of this layer is encapsulating business logic in a high level interface
 available to the controller, freeing the latter from overload and duplication.
