@@ -1,6 +1,6 @@
 {
   "name": "agni",
-  "description": "Simple router and MVC web application skeleton for node.js",
+  "description": "Simple and intuitive MVC web framework for node.js",
   "version": "0.1.0",
   "author": "Lorenzo Tabacchini <lortabac@gmx.com>",
   "dependencies": {
@@ -9,6 +9,10 @@
     "forever": "*",
     "ejs": "*",
     "jade": "*"
+  },
+  "scripts": {
+    "start": "node ./server.js",
+    "stop": "node ./script/stop.js"
   },
   "devDependencies": {
     "mocha": "*",
