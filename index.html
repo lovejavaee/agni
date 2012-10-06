@@ -7,37 +7,38 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
+    <script src="javascripts/main.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/lortabac/agni">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/lortabac/agni/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/lortabac/agni/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+
+      <header>
+        <h1>Agni</h1>
+        <p>Simple and intuitive MVC web framework for node.js</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/lortabac/agni" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/lortabac/agni/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/lortabac/agni/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
 
     <div class="wrapper">
-
+      <nav>
+        <ul></ul>
+      </nav>
       <section>
-        <div id="title">
-          <h1>Agni</h1>
-          <p>Simple and intuitive MVC web framework for node.js</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/lortabac">lortabac</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
-        </div>
-
         <h1>agni</h1>
 
 <p>Simple and intuitive MVC web framework for node.js.</p>
@@ -52,7 +53,15 @@ for multi-language support.</p>
 <p>It does not include any database abstraction system, but leaves the choice of the
 object mapping system to the developer.</p>
 
-<h2>Architecture</h2>
+<h2>Quick start</h2>
+
+<ol>
+<li><p>Install agni locally.</p></li>
+<li><p>Enter the <em>agni</em> directory: <code>cd agni</code>.</p></li>
+<li><p>Run <code>nmp start</code>.</p></li>
+<li><p>Point your browser to <code>localhost:3000</code>.</p></li>
+<li><p>If you see the welcome message, it works!</p></li>
+</ol><h2>Architecture</h2>
 
 <p>Agni is loosely based on the <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a>
 development pattern.</p>
@@ -64,14 +73,29 @@ development pattern.</p>
 <li><p>the <strong>View</strong>, which is the part of the application that is "visible" to the user;</p></li>
 <li><p>the <strong>Controller</strong>, which acts as an intermediary between the other two components,
 taking data from the Model and sending it to the View.</p></li>
-</ul><p>A fourth component is optionally available, which is the <strong>Service</strong> layer.
+</ul><p>A fourth component is optionally available, that is the <strong>Service</strong> layer.
 The purpose of this layer is encapsulating business logic in a high level interface
 available to the controller, freeing the latter from overload and duplication.</p>
 
-<p>Typically, the most simple applications will only need Controllers and Views. You
+<p>Typically, for simple applications you will only need Controllers and Views. You
 are not forced to use Models and Services if you do not need them.</p>
-      </section>
 
+<h2>Controllers</h2>
+
+<p>Agni's routing system is similar to that of popular frameworks like <a href="http://codeigniter.com/">CodeIgniter</a>:</p>
+
+<p><code>mywebsite.com/module/function/arg1/arg2</code></p>
+
+<ol>
+<li><p>The first URL segment is the module that should be required.</p></li>
+<li><p>The second segment is the function that should be called.</p></li>
+<li><p>The third, and any other segments, are the arguments that should be passed to the function.</p></li>
+</ol><p>So, for example, a request to <code>mywebsite.com/article/show/173</code>, will require the <code>article</code> module from the <code>controllers</code> folder, and execute the exported function <code>show(173)</code>.</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/lortabac">lortabac</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
