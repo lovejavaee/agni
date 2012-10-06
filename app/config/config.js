@@ -37,6 +37,9 @@ env.all.staticOptions = {
  * Development-specific settings
  */
 
+//Whether to daemonize the process
+env.development.daemonize = false;
+
 //Logger options
 //Set to false for no logging at all
 //Set to {} for default options
@@ -48,6 +51,9 @@ env.development.loggerOptions = {
 /**
  * Production-specific settings
  */
+
+//Whether to daemonize the process
+env.production.daemonize = true;
 
 //Logger options
 //Set to false for no logging at all
