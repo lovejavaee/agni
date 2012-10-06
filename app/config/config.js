@@ -1,43 +1,52 @@
 /**
- * Available environments
+ * Environments
  */
 
-var envs = {
+var env = module.exports = {
   'all': {},
   'development': {},
   'production': {}
 }
 
-/**
- * Set current environment (default is 'development')
- */
-
-envs.current = 'development';
+//Current environment (default is 'development')
+env.current = 'development';
 
 /**
  * Settings for all environments
  */
 
-//Home page
-envs.all.home = 'home';
-
 //Web server port
-envs.all.port = 3000;
+env.all.port = 3000;
+
+//Home page
+env.all.home = 'home';
 
 //Default template engine
-envs.all.engine = 'ejs';
+env.all.engine = 'ejs';
 
 //Default view extension
-envs.all.extension = 'html';
+env.all.extension = 'html';
+
+//Static file server options 
+env.all.staticOptions = {
+  //Browser cache age (in milliseconds)
+  maxAge: 86400000
+};
 
 /**
  * Development-specific settings
  */
 
+env.development.loggerOptions = {
+  immediate: true,
+  format: 'dev'
+}
+
 /**
  * Production-specific settings
  */
 
-//End of settings
-
-module.exports = envs;
+env.production.loggerOptions = {
+  immediate: false,
+  format: 'tiny'
+}
