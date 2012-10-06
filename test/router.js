@@ -40,9 +40,10 @@ describe('Router', function() {
     context.controllers.controllers = {
       '/home': {
         nil: function() {},
-        foo: function() {}
+        foo: function() {},
+        baz: function(arg1, arg2) {}
       },
-      '/foo2/foo3': {
+      '/foo/foo2': {
         bar: function() {}
       }
     }
@@ -59,9 +60,9 @@ describe('Router', function() {
       });
     });
     
-    it('should call /foo2/foo3.bar()', function(done) {
-      req.url = '/foo2/foo3/bar';
-      var spy = sinon.spy(context.controllers.controllers['/foo2/foo3'], 'bar');
+    it('should call /foo/foo2.bar()', function(done) {
+      req.url = '/foo/foo2/bar';
+      var spy = sinon.spy(context.controllers.controllers['/foo/foo2'], 'bar');
       
       var router = new Router(req, res, context);
       router.route(function(err, found) {
@@ -107,5 +108,29 @@ describe('Router', function() {
         done();
       });
     })
+    
+    it('should call /home.foo() with 2 arguments', function(done) {
+      req.url = '/home/foo/x/y';
+      var spy = sinon.spy(context.controllers.controllers['/home'], 'foo');
+      
+      var router = new Router(req, res, context);
+      router.route(function(err, found) {
+        assert.ok(spy.calledWithExactly('x', 'y'));
+        spy.restore();
+        done();
+      });
+    });
+    
+    it('should call /home.foo() with 3 arguments', function(done) {
+      req.url = '/home/foo/x/y/z';
+      var spy = sinon.spy(context.controllers.controllers['/home'], 'foo');
+      
+      var router = new Router(req, res, context);
+      router.route(function(err, found) {
+        assert.ok(spy.calledWithExactly('x', 'y', 'z'));
+        spy.restore();
+        done();
+      });
+    });
   });
 });
