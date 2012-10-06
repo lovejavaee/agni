@@ -37,15 +37,21 @@ env.all.staticOptions = {
  * Development-specific settings
  */
 
+//Logger options
+//Set to false for no logging at all
+//Set to {} for default options
 env.development.loggerOptions = {
   immediate: true,
   format: 'dev'
-}
+};
 
 /**
  * Production-specific settings
  */
 
+//Logger options
+//Set to false for no logging at all
+//Set to {} for default options
 env.production.loggerOptions = {
   immediate: false,
   format: 'tiny'
