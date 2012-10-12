@@ -6,11 +6,18 @@ Simple and intuitive MVC web framework for node.js.
 
 Agni is a web framework built on top of Express, based on the principle
 of _convention over configuration_.
-It consists of a router, an MVC application skeleton and a useful helper function
-for multi-language support.
 
-It does not include any database abstraction system, but leaves the choice of the
-object mapping system to the developer.
+##Usage
+
+`npm install -g agni`
+
+`agni create myapp`
+
+`cd myapp`
+
+`npm install`
+
+`npm start`
 
 ## Documentation
 

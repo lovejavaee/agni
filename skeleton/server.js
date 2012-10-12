@@ -1,7 +1,10 @@
 var forever = require('forever');
-var config = require('./lib/config');
+var Config = require('agni-framework').Config;
+var path = require('path');
 
-var appPath = './lib/agni.js';
+var appDir = path.join(__dirname, 'app');
+var config = new Config(appDir);
+
 var daemonOptions = {
   outFile: './log/output.txt',
   errFile: './log/error.txt'
@@ -9,7 +12,7 @@ var daemonOptions = {
 var daemonize = config.get('daemonize');
 
 if(daemonize) {
-  forever.startDaemon(appPath, daemonOptions);
+  forever.startDaemon('./lib/agni.js', daemonOptions);
 } else {
   require('./lib/agni.js');
 }

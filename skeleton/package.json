@@ -1,0 +1,14 @@
+{
+  "name": "agni-app",
+  "description": "Description",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "express": "3.x",
+    "forever": "*"
+  },
+  "scripts": {
+    "start": "node ./server.js",
+    "stop": "node ./script/stop.js"
+  }
+}

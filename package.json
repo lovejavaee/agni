@@ -1,23 +1,13 @@
 {
   "name": "agni",
-  "description": "Simple and intuitive MVC web framework for node.js",
-  "version": "0.1.1beta",
+  "description": "Command line utility for creating agni-framework applications",
+  "version": "0.1.2beta",
   "author": "Lorenzo Tabacchini <lortabac@gmx.com>",
+  "main": "./lib",
+  "bin" : { "agni" : "./bin/agni.js" },
   "dependencies": {
-    "express": "3.x",
-    "consolidate": "*",
-    "forever": "*",
-    "ejs": "*",
-    "jade": "*"
-  },
-  "scripts": {
-    "test": "make test",
-    "start": "node ./server.js",
-    "stop": "node ./script/stop.js"
-  },
-  "devDependencies": {
-    "mocha": "*",
-    "sinon": "*"
+    "commander": "*",
+    "cpr": "*"
   },
   "keywords": [
     "framework",
