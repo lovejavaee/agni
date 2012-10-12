@@ -120,9 +120,9 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <p>You can create namespaces, by simply putting your controllers in sub-directories.</p>
 
-<p>For example, a request to <code>mywebsite.com/blog/article/show/173</code>, would require the article module from the <code>controllers/blog</code> folder, and execute the exported function <code>show</code> with 173 as parameter.</p>
+<p>For example, a request to <code>mywebsite.com/blog/article/show/173</code>, would require the article module from the <code>controllers/blog</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
 
-<p>Inside controllers, you can access the standard <code>request</code> and <code>response</code> object as <code>this.req</code> as <code>this.res</code>, respectively.</p>
+<p>Inside controllers, you can access the standard <strong>request</strong> and <strong>response</strong> objects as <code>this.req</code> as <code>this.res</code>, respectively.</p>
 
 <h2>Views</h2>
 
@@ -146,7 +146,7 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <h2>Services</h2>
 
-<p>To access a service, you can use <code>this.model(serviceName)</code> from any controller or service.</p>
+<p>To access a service, you can use <code>this.service(serviceName)</code> from any controller or service.</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/lortabac">lortabac</a></p>
