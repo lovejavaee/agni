@@ -46,19 +46,20 @@
 <h2>Overview</h2>
 
 <p>Agni is a web framework built on top of Express, based on the principle
-of <em>convention over configuration</em>.
-It consists of a router, an MVC application skeleton and a useful helper function
-for multi-language support.</p>
+of <em>convention over configuration</em>.</p>
 
-<p>It does not include any database abstraction system, but leaves the choice of the
-object mapping system to the developer.</p>
+<p>Its purpose is making access to the various components easier, so that you can forget about routes and paths and focus on what your application does.</p>
+
+<p>It does not include any database abstraction system, but leaves this choice to the developer.</p>
 
 <h2>Quick start</h2>
 
 <ol>
-<li><p>Install agni locally.</p></li>
-<li><p>Enter the <em>agni</em> directory: <code>cd agni</code>.</p></li>
-<li><p>Run <code>nmp start</code>.</p></li>
+<li><p>Install agni globally: <code>npm install agni -g</code>.</p></li>
+<li><p>Create an application called welcome: <code>agni create welcome</code></p></li>
+<li><p>Enter the newly created directory: <code>cd welcome</code>.</p></li>
+<li><p>Install all dependencies: <code>npm install</code>.</p></li>
+<li><p>Run the application: <code>nmp start</code>.</p></li>
 <li><p>Point your browser to <code>localhost:3000</code>.</p></li>
 <li><p>If you see the welcome message, it works!</p></li>
 </ol><h2>Architecture</h2>
@@ -73,16 +74,31 @@ development pattern.</p>
 <li><p>the <strong>View</strong>, which is the part of the application that is "visible" to the user;</p></li>
 <li><p>the <strong>Controller</strong>, which acts as an intermediary between the other two components,
 taking data from the Model and sending it to the View.</p></li>
-</ul><p>A fourth component is optionally available, that is the <strong>Service</strong> layer.
+</ul><p>A fourth component is also available, that is the <strong>Service</strong> layer.
 The purpose of this layer is encapsulating business logic in a high level interface
 available to the controller, freeing the latter from overload and duplication.</p>
 
-<p>Typically, for simple applications you will only need Controllers and Views. You
-are not forced to use Models and Services if you do not need them.</p>
+<p>Of course, you are free to use only the components that you need. Agni does not oblige you to use Models and Services if you do not need them.</p>
+
+<h2>Directory structure</h2>
+
+<p>The root application directory is <code>app</code>.</p>
+
+<p>Inside <code>app</code>, you have <code>controllers</code>, <code>models</code>, <code>services</code> and <code>views</code>, where you can store the modules belonging to the corresponding components.</p>
+
+<p>In <code>config</code> there is a configuration file <code>config.js</code> and an initialization script <code>init.js</code>.</p>
+
+<p>In <code>static</code> you can put all your static resources like images, javascript files, style sheet and so on.</p>
+
+<h2>Routing</h2>
+
+<p>There is no explicit route definition in Agni. The routing mechanism is based on controller paths and method names.</p>
 
 <h2>Controllers</h2>
 
-<p>Agni's routing system is similar to that of popular frameworks like <a href="http://codeigniter.com/">CodeIgniter</a>:</p>
+<p>Agni uses a common routing system, similar to what is used in <a href="http://codeigniter.com/">CodeIgniter</a> and other frameworks.</p>
+
+<p>If you split the requested URL in segments:</p>
 
 <p><code>mywebsite.com/module/function/arg1/arg2</code></p>
 
@@ -90,7 +106,47 @@ are not forced to use Models and Services if you do not need them.</p>
 <li><p>The first URL segment is the module that should be required.</p></li>
 <li><p>The second segment is the function that should be called.</p></li>
 <li><p>The third, and any other segments, are the arguments that should be passed to the function.</p></li>
-</ol><p>So, for example, a request to <code>mywebsite.com/article/show/173</code>, will require the <code>article</code> module from the <code>controllers</code> folder, and execute the exported function <code>show(173)</code>.</p>
+</ol><p>So, for example, a request to <code>mywebsite.com/article/show/173</code>, would require the <code>article</code> module from the <code>controllers</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
+
+<p>More or less equivalent to doing:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">article</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'./app/controllers/article'</span><span class="p">);</span>
+<span class="nx">article</span><span class="p">.</span><span class="nx">show</span><span class="p">(</span><span class="mi">173</span><span class="p">);</span>
+</pre></div>
+
+<p>If you omit the method name, it will look for a function called <code>nil</code> and execute it.</p>
+
+<p>For example, a request to <code>mywebsite.com/articles</code> will require the <code>articles</code> module and execute the <code>nil</code> function.</p>
+
+<p>You can create namespaces, by simply putting your controllers in sub-directories.</p>
+
+<p>For example, a request to <code>mywebsite.com/blog/article/show/173</code>, would require the article module from the <code>controllers/blog</code> folder, and execute the exported function <code>show</code> with 173 as parameter.</p>
+
+<p>Inside controllers, you can access the standard <code>request</code> and <code>response</code> object as <code>this.req</code> as <code>this.res</code>, respectively.</p>
+
+<h2>Views</h2>
+
+<p>Rendering views is very easy. Inside a controller, execute:</p>
+
+<p><code>this.render(viewName, locals, callbak)</code>.</p>
+
+<p>If you omit the view name, it will be the same as your controller module. For example, let's suppose you have a controller module called <code>hello</code>:</p>
+
+<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">//This will render the view 'app/views/hello.html'</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Models</h2>
+
+<p>To access a model, you can use <code>this.model(modelName)</code> from any controller or service.</p>
+
+<h2>Services</h2>
+
+<p>To access a service, you can use <code>this.model(serviceName)</code> from any controller or service.</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/lortabac">lortabac</a></p>
