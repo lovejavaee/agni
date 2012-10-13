@@ -14,4 +14,7 @@ module.exports = function(app) {
   app.use(express.cookieSession({
     secret: 'my secret'
   }));
+  
+  //Fake PUT and DELETE methods by providing a POST field called '_method'
+  app.use(express.methodOverride());
 }
