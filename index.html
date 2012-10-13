@@ -88,13 +88,17 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <p>In <code>config</code> there is a configuration file <code>config.js</code> and an initialization script <code>init.js</code>.</p>
 
-<p>In <code>static</code> you can put all your static resources like images, javascript files, style sheet and so on.</p>
+<p>In <code>public</code> you can put all your static resources like images, javascript files, style sheet and so on.</p>
+
+<p><code>public</code> is also the default favicon location.</p>
 
 <h2>Routing</h2>
 
-<p>There is no explicit route definition in Agni. The routing mechanism is based on controller paths and method names.</p>
+<p>There is no explicit route definition in Agni. The routing mechanism is based on controller paths, function names and (optionally) HTTP methods.</p>
 
 <h2>Controllers</h2>
+
+<h3>The Controller as a router</h3>
 
 <p>Agni uses a common routing system, similar to what is used in <a href="http://codeigniter.com/">CodeIgniter</a> and other frameworks.</p>
 
@@ -122,7 +126,43 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <p>For example, a request to <code>mywebsite.com/blog/article/show/173</code>, would require the article module from the <code>controllers/blog</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
 
+<h3>Controller properties</h3>
+
 <p>Inside controllers, you can access the standard <strong>request</strong> and <strong>response</strong> objects as <code>this.req</code> as <code>this.res</code>, respectively.</p>
+
+<p>For convenience, the following properties are also provided:</p>
+
+<p><code>this.COOKIES</code> (cookies)
+<code>this.SESS</code> (cookie-based session)
+<code>this.GET</code> (query string)
+<code>this.POST</code> (request body)</p>
+
+<h3>From REST to CRUD</h3>
+
+<p>You can easily map REST requests to CRUD operations, by setting the REST property in the controller:</p>
+
+<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">REST</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+<span class="c1">//GET</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Read</span>
+<span class="p">}</span>
+
+<span class="c1">//POST</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">//Create</span>
+<span class="p">}</span>
+
+<span class="c1">//PUT</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Update</span>
+<span class="p">}</span>
+
+<span class="c1">//DELETE</span>
+<span class="nx">exports</span><span class="p">.</span><span class="k">delete</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Delete</span>
+<span class="p">}</span>
+</pre></div>
 
 <h2>Views</h2>
 
