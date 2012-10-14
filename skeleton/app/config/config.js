@@ -18,20 +18,14 @@ env.current = 'development';
 //Web server port
 env.all.port = 3000;
 
-//Home page
-env.all.home = 'home';
+//Default controller
+env.all.defaultController = 'index';
 
 //Default template engine
 env.all.engine = 'ejs';
 
 //Default view extension
 env.all.extension = 'html';
-
-//Static file server options 
-env.all.staticOptions = {
-  //Browser cache age (in milliseconds)
-  maxAge: 86400000
-};
 
 /**
  * Development-specific settings
