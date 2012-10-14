@@ -1,7 +1,7 @@
 {
   "name": "agni",
   "description": "Command line utility for creating agni-framework applications",
-  "version": "0.1.3beta",
+  "version": "0.1.4beta",
   "author": "Lorenzo Tabacchini <lortabac@gmx.com>",
   "main": "./lib",
   "bin" : { "agni" : "./bin/agni.js" },
