@@ -1,7 +1,6 @@
 # Ignore everything in this directory
 *
 # Except
-!index.html
-!errors/
+!404.html
 !.gitignore
 
