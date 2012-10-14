@@ -1,4 +1,5 @@
 var express = require('express');
+var path = require('path');
 
 /**
  * To be run before app.listen()
@@ -15,9 +16,9 @@ module.exports = function(app) {
     secret: 'my secret'
   }));
   
-  //Fake PUT and DELETE methods by providing a POST field called '_method'
+  //Fake PUT and DELETE methods
   app.use(express.methodOverride());
   
   //Static server
-  app.use('/public', express.static('../public', {maxAge: 86400000}));
+  app.use('/public', express.static(path.join(__dirname, '..', 'public'), {maxAge: 86400000}));
 }
