@@ -23,6 +23,11 @@ of _convention over configuration_.
 
 http://lortabac.github.com/agni/
 
+## Agni-framework
+
+Please note that agni is only a command-line tool to create an agni-framework application skeleton.
+The framework itself is at https://github.com/lortabac/agni-framework.
+
 ## License
 
 (The MIT License)
