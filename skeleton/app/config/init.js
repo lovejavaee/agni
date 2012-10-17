@@ -2,8 +2,6 @@ var express = require('express');
 var path = require('path');
 
 /**
- * To be run before app.listen()
- * 
  * You can add middleware here
  */
 
