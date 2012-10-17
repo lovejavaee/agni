@@ -86,7 +86,7 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <p>Inside <code>app</code>, you have <code>controllers</code>, <code>models</code>, <code>services</code> and <code>views</code>, where you can store the modules belonging to the corresponding components.</p>
 
-<p>In <code>config</code> there is a configuration file <code>config.js</code> and an initialization script <code>init.js</code>.</p>
+<p>In <code>config</code> there is a configuration file <code>config.js</code> and an initialization script <code>init.js</code>, where you can add middleware.</p>
 
 <p>In <code>public</code> you can put all your static resources like images, javascript files, style sheet and so on.</p>
 
@@ -100,7 +100,7 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <h3>The Controller as a router</h3>
 
-<p>Agni uses a common routing system, similar to what is used in <a href="http://codeigniter.com/">CodeIgniter</a> and other frameworks.</p>
+<p>Agni uses a common routing system, similar to what is used in <a href="http://codeigniter.com/">CodeIgniter</a> and other popular frameworks.</p>
 
 <p>If you split the requested URL in segments:</p>
 
@@ -132,16 +132,20 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <p>For convenience, the following properties are also provided:</p>
 
-<p><code>this.COOKIES</code> (cookies)
-<code>this.SESS</code> (cookie-based session)
-<code>this.GET</code> (query string)
-<code>this.POST</code> (request body)</p>
+<ul>
+<li><p><code>this.COOKIES</code> (cookies)</p></li>
+<li><p><code>this.SESS</code> (cookie-based session)</p></li>
+<li><p><code>this.GET</code> (query string)</p></li>
+<li><p><code>this.POST</code> (request body)</p></li>
+</ul><h3>From REST to CRUD</h3>
 
-<h3>From REST to CRUD</h3>
+<p>You can easily map REST requests to CRUD operations, by setting the REST property in the controller.</p>
 
-<p>You can easily map REST requests to CRUD operations, by setting the REST property in the controller:</p>
+<p>Let's suppose we have a controller called <code>article</code>, which looks like this:</p>
 
-<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">REST</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<div class="highlight"><pre><span class="c1">//File: app/controllers/article.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">REST</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 
 <span class="c1">//GET</span>
 <span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
@@ -164,11 +168,20 @@ available to the controller, freeing the latter from overload and duplication.</
 <span class="p">}</span>
 </pre></div>
 
-<h2>Views</h2>
+<p>The requests will be mapped according to the HTTP method:</p>
+
+<ul>
+<li><p><code>GET /article/1</code> =&gt; <code>article.read(1)</code></p></li>
+<li><p><code>POST /article</code> =&gt; <code>article.create()</code></p></li>
+<li><p><code>PUT /article/1</code> =&gt; <code>article.update(1)</code></p></li>
+<li><p><code>DELETE /article/1</code> =&gt; <code>article.del(1)</code></p></li>
+</ul><h2>Views</h2>
+
+<h3>Rendering a view</h3>
 
 <p>Rendering views is very easy. Inside a controller, execute:</p>
 
-<p><code>this.render(viewName, locals, callbak)</code>.</p>
+<p><code>this.render(viewName, locals, callback)</code>.</p>
 
 <p>If you omit the view name, it will be the same as your controller module. For example, let's suppose you have a controller module called <code>hello</code>:</p>
 
@@ -180,10 +193,20 @@ available to the controller, freeing the latter from overload and duplication.</
 <span class="p">}</span>
 </pre></div>
 
-<p>To nest a view inside a layout, do:</p>
+<p>It will render the view <code>hello.html</code>.</p>
 
-<div class="highlight"><pre><span class="k">this</span><span class="p">.</span><span class="nx">nest</span><span class="p">(</span><span class="s1">'viewName'</span><span class="p">).</span><span class="nx">within</span><span class="p">(</span><span class="s1">'master'</span><span class="p">).</span><span class="nx">as</span><span class="p">(</span><span class="s1">'child'</span><span class="p">).</span><span class="nx">render</span><span class="p">();</span>
+<h3>Nesting views</h3>
+
+<p>To show a view inside a layout, do:</p>
+
+<div class="highlight"><pre><span class="k">this</span><span class="p">.</span><span class="nx">nest</span><span class="p">(</span><span class="s1">'viewName'</span><span class="p">,</span> <span class="nx">locals</span><span class="p">).</span><span class="nx">within</span><span class="p">(</span><span class="s1">'master'</span><span class="p">).</span><span class="nx">as</span><span class="p">(</span><span class="s1">'child'</span><span class="p">).</span><span class="nx">render</span><span class="p">();</span>
 </pre></div>
+
+<p>Where <code>.within()</code> sets the layout and <code>.as()</code> sets the name of the child view inside the layout.</p>
+
+<p>If you omit the view name, it will be the same as your controller module.</p>
+
+<p>If you omit <code>.within()</code> and <code>.as()</code>, they will default to <code>layout</code> and <code>content</code>, respectively.</p>
 
 <h2>Models</h2>
 
@@ -192,6 +215,69 @@ available to the controller, freeing the latter from overload and duplication.</
 <h2>Services</h2>
 
 <p>To access a service, you can use <code>this.service(serviceName)</code> from any controller or service.</p>
+
+<h2>Configuration</h2>
+
+<p>You can read the settings in <code>config/config.js</code> with the method <code>this.config.get(key)</code> available in all
+controllers, models and services.</p>
+
+<p>If you need to access the settings from the global scope of a module, you can do:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Config</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'agni-framework'</span><span class="p">).</span><span class="nx">Config</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Config</span><span class="p">(</span><span class="nx">appDirectoryPath</span><span class="p">);</span><span class="c1">//Absolute path of the 'app' directory</span>
+<span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+</pre></div>
+
+<h2>Examples</h2>
+
+<h3>Hello world!</h3>
+
+<h4>Controller</h4>
+
+<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+<h4>View</h4>
+
+<div class="highlight"><pre><span class="c">&lt;!-- File: app/views/hello.html --&gt;</span>
+
+<span class="nt">&lt;p&gt;</span>Hello world!<span class="nt">&lt;/p&gt;</span>
+</pre></div>
+
+<p>Open the page <code>localhost:3000/hello</code>.</p>
+
+<p>That's it!</p>
+
+<h3>What's your name?</h3>
+
+<h4>Controller</h4>
+
+<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">myNameIs</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">locals</span> <span class="o">=</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">name</span><span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'my_name_is'</span><span class="p">,</span> <span class="nx">locals</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+<h4>View</h4>
+
+<pre><code>&lt;!-- File: app/views/my_name_is.html --&gt;
+&lt;!-- Example with template engine ejs --&gt;
+
+&lt;p&gt;Hello, &lt;%= name %&gt;.&lt;/p&gt;
+&lt;p&gt;Nice to meet you!&lt;/p&gt;
+</code></pre>
+
+<p>Now point your browser to <code>localhost:3000/hello/my-name-is/John</code>, and see the output.</p>
+
+<p>Please note how function names are automatically converted to camelCase.</p>
+
+<p>Sorry if your name is not John :)</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/lortabac">lortabac</a></p>
