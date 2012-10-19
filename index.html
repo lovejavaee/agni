@@ -86,11 +86,9 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <p>Inside <code>app</code>, you have <code>controllers</code>, <code>models</code>, <code>services</code> and <code>views</code>, where you can store the modules belonging to the corresponding components.</p>
 
-<p>In <code>config</code> there is a configuration file <code>config.js</code> and an initialization script <code>init.js</code>, where you can add middleware.</p>
+<p>In <code>config</code> there are three configuration files: <code>config.js</code> contains the application settings, <code>init.js</code> is where you can define middleware, and <code>server.js</code> is where you can set whether to run the server as a daemon (with forever) or not.</p>
 
 <p>In <code>public</code> you can put all your static resources like images, javascript files, style sheet and so on.</p>
-
-<p><code>public</code> is also the default favicon location.</p>
 
 <h2>Routing</h2>
 
@@ -218,14 +216,14 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <h2>Configuration</h2>
 
-<p>You can read the settings in <code>config/config.js</code> with the method <code>this.config.get(key)</code> available in all
-controllers, models and services.</p>
+<p>In all controller, model and service functions you can access the <code>settings</code> object as <code>this.settings</code>.</p>
 
-<p>If you need to access the settings from the global scope of a module, you can do:</p>
+<p>If you need the settings object in the global scope of a module, you can use the application instance which (if your application has been created with the command-line tool <strong>agni</strong>) is exported by <code>/lib/agni.js</code>:</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Config</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'agni-framework'</span><span class="p">).</span><span class="nx">Config</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Config</span><span class="p">(</span><span class="nx">appDirectoryPath</span><span class="p">);</span><span class="c1">//Absolute path of the 'app' directory</span>
-<span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+<div class="highlight"><pre><span class="c1">//File: app/models/foo.js</span>
+
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">'../../../lib/agni'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">env</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">env</span><span class="p">;</span>
 </pre></div>
 
 <h2>Examples</h2>
