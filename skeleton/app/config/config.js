@@ -1,63 +1,46 @@
-/*------------------------------------------------------------------------------
- Environment definition
- -----------------------------------------------------------------------------*/
+/*******************************************************************************
+ * 
+ * Application settings
+ * 
+ ******************************************************************************/
 
-var env = module.exports = {
-  'all': {},
-  'development': {},
-  'production': {}
-}
+module.exports = function configure(app) {
 
-/*------------------------------------------------------------------------------
- Current environment
+  /*----------------------------------------------------------------------------
+    Current environment
+   ---------------------------------------------------------------------------*/
 
- (default is 'development')
- -----------------------------------------------------------------------------*/
+  app.set('env', 'development');
 
-env.current = 'development';
+  /*----------------------------------------------------------------------------
+    Settings for all environments
+   ---------------------------------------------------------------------------*/
 
-/*------------------------------------------------------------------------------
- Settings for all environments
- -----------------------------------------------------------------------------*/
+  //Web server port
+  app.set('port', 3000);
 
-//Web server port
-env.all.port = 3000;
+  //Default controller, to be called on '/' requests
+  app.set('defaultController', 'index');
 
-//Default controller, to be called on '/' requests
-env.all.defaultController = 'index';
+  //Default template engine
+  app.set('engine', 'ejs');
 
-//Default template engine
-env.all.engine = 'ejs';
+  //Default view extension
+  app.set('extension', 'html');
 
-//Default view extension
-env.all.extension = 'html';
+  /*----------------------------------------------------------------------------
+    Development settings
+   ---------------------------------------------------------------------------*/
 
-/*------------------------------------------------------------------------------
- Development settings
- -----------------------------------------------------------------------------*/
+  if(app.get('env') === 'development') {
+    //Add development-specific settings here
+  }
 
-//Whether to daemonize the process
-env.development.daemonize = false;
+  /*----------------------------------------------------------------------------
+    Production settings
+   ---------------------------------------------------------------------------*/
 
-//Logger options
-//Set to false for no logging at all
-//Set to {} for default logger options
-env.development.loggerOptions = {
-  immediate: true,
-  format: 'dev'
-};
-
-/*------------------------------------------------------------------------------
- Production settings
- -----------------------------------------------------------------------------*/
-
-//Whether to daemonize the process
-env.production.daemonize = true;
-
-//Logger options
-//Set to false for no logging at all
-//Set to {} for default logger options
-env.production.loggerOptions = {
-  immediate: false,
-  format: 'tiny'
+  if(app.get('env') === 'production') {
+    //Add production-specific settings here
+  }
 }
