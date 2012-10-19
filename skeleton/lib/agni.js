@@ -9,16 +9,10 @@ var framework = require('agni-framework');
  * Create express instance
  */
 
-var app = express();
+var app = module.exports = express();
 
 /**
  * Boot agni
  */
 
 framework.boot(app);
-
-/**
- * Export express app
- */
-
-module.exports = app;
