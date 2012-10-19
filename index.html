@@ -59,7 +59,7 @@ of <em>convention over configuration</em>.</p>
 <li><p>Create an application called welcome: <code>agni create welcome</code></p></li>
 <li><p>Enter the newly created directory: <code>cd welcome</code>.</p></li>
 <li><p>Install all dependencies: <code>npm install</code>.</p></li>
-<li><p>Run the application: <code>nmp start</code>.</p></li>
+<li><p>Run the application: <code>npm start</code>.</p></li>
 <li><p>Point your browser to <code>localhost:3000</code>.</p></li>
 <li><p>If you see the welcome message, it works!</p></li>
 </ol><h2>Architecture</h2>
@@ -84,13 +84,13 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <p>The root application directory is <code>app</code>.</p>
 
-<p>Inside <code>app</code>, you have <code>controllers</code>, <code>models</code>, <code>services</code> and <code>views</code>, where you can store the modules belonging to the corresponding components.</p>
+<p>Inside <code>app</code>, you have the following directories:</p>
 
-<p>In <code>config</code> there are three configuration files: <code>config.js</code> contains the application settings, <code>init.js</code> is where you can define middleware, and <code>server.js</code> is where you can set whether to run the server as a daemon (with forever) or not.</p>
-
-<p>In <code>public</code> you can put all your static resources like images, javascript files, style sheet and so on.</p>
-
-<h2>Routing</h2>
+<ul>
+<li><p><code>controllers</code>, <code>models</code>, <code>services</code> and <code>views</code>, where you can store the modules belonging to the corresponding components.</p></li>
+<li><p><code>config</code>, which contains three files: <code>config.js</code> with the application settings, <code>init.js</code>, where you can define middleware, and <code>server.js</code>, where you can set whether to run the server as a daemon (with forever) or not.</p></li>
+<li><p><code>public</code>, where you can put all your static resources like images, javascript files, style sheet and so on.</p></li>
+</ul><h2>Routing</h2>
 
 <p>There is no explicit route definition in Agni. The routing mechanism is based on controller paths, function names and (optionally) HTTP methods.</p>
 
