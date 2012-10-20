@@ -88,7 +88,7 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <ul>
 <li><p><code>controllers</code>, <code>models</code>, <code>services</code> and <code>views</code>, where you can store the modules belonging to the corresponding components.</p></li>
-<li><p><code>config</code>, which contains three files: <code>config.js</code> with the application settings, <code>init.js</code>, where you can define middleware, and <code>server.js</code>, where you can set whether to run the server as a daemon (with forever) or not.</p></li>
+<li><p><code>config</code>, which contains three files: <code>config.js</code>, with the application settings, <code>init.js</code>, where you can define middleware, and <code>server.js</code>, where you can set whether to run the server as a daemon (with forever) or not.</p></li>
 <li><p><code>public</code>, where you can put all your static resources like images, javascript files, style sheet and so on.</p></li>
 </ul><h2>Routing</h2>
 
@@ -116,7 +116,7 @@ available to the controller, freeing the latter from overload and duplication.</
 <span class="nx">article</span><span class="p">.</span><span class="nx">show</span><span class="p">(</span><span class="mi">173</span><span class="p">);</span>
 </pre></div>
 
-<p>If you omit the method name, it will look for a function called <code>nil</code> and execute it.</p>
+<p>If you omit the function name, it will look for a function called <code>nil</code> and execute it.</p>
 
 <p>For example, a request to <code>mywebsite.com/articles</code> will require the <code>articles</code> module and execute the <code>nil</code> function.</p>
 
@@ -208,17 +208,97 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <h2>Models</h2>
 
-<p>To access a model, you can use <code>this.model(modelName)</code> from any controller or service.</p>
+<p>To access a model, you can use <code>this.model(modelName)</code> from any controller or service function.
+It will return the same object as <code>require(__dirname + '../models/' + modelName)</code>.</p>
+
+<p>If you omit the name, it will be the same as your controller module.</p>
+
+<p>Example:</p>
+
+<div class="highlight"><pre><span class="c1">//File: app/models/article.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">readArticle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Read article from DB</span>
+  <span class="c1">//...</span>
+
+  <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">articleData</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>And in the controller:</p>
+
+<div class="highlight"><pre><span class="c1">//File: app/controllers/article.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">().</span><span class="nx">readArticle</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span> <span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'read_article'</span><span class="p">,</span> <span class="p">{</span><span class="nx">articleData</span><span class="o">:</span> <span class="nx">data</span><span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
 
 <h2>Services</h2>
 
-<p>To access a service, you can use <code>this.service(serviceName)</code> from any controller or service.</p>
+<p>To access a service, you can use <code>this.service(serviceName)</code> from any controller or service function.
+It will return the same object as <code>require(__dirname + '../services/' + serviceName)</code>.</p>
+
+<p>If you omit the name, it will be the same as your controller module.</p>
+
+<p>Example:</p>
+
+<div class="highlight"><pre><span class="c1">//File: app/services/string_helpers.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">reverse</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>In the controller:</p>
+
+<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s1">'Hello'</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">reversed</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'string_helpers'</span><span class="p">).</span><span class="nx">reverse</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">({</span><span class="nx">reversedHello</span><span class="o">:</span> <span class="nx">reversed</span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>If the service returns a constructor function, you can use the <code>construct()</code> convenience method:</p>
+
+<div class="highlight"><pre><span class="c1">//File: app/services/circle.js</span>
+
+<span class="kd">function</span> <span class="nx">Circle</span><span class="p">(</span><span class="nx">radius</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">radius</span> <span class="o">=</span> <span class="nx">radius</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Sum</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getArea</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nx">radius</span> <span class="o">*</span> <span class="nx">radius</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Circle</span><span class="p">;</span>
+</pre></div>
+
+<p>In the controller:</p>
+
+<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">area</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'circle'</span><span class="p">).</span><span class="nx">construct</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">getArea</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>which is equivalent to:</p>
+
+<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">Circle</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'circle'</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">circle</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Circle</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">area</span> <span class="o">=</span> <span class="nx">circle</span><span class="p">.</span><span class="nx">getArea</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
 
 <h2>Configuration</h2>
 
-<p>In all controller, model and service functions you can access the <code>settings</code> object as <code>this.settings</code>.</p>
+<p>In all controller, model and service functions you can access the Express <code>app.settings</code> object as <code>this.settings</code>.</p>
 
-<p>If you need the settings object in the global scope of a module, you can use the application instance which (if your application has been created with the command-line tool <strong>agni</strong>) is exported by <code>/lib/agni.js</code>:</p>
+<p>If you need the settings object in the global scope of a module, you can use the application instance which is exported by <code>/lib/agni.js</code>:</p>
 
 <div class="highlight"><pre><span class="c1">//File: app/models/foo.js</span>
 
