@@ -263,6 +263,8 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 <span class="p">}</span>
 </pre></div>
 
+<h3>Service constructor</h3>
+
 <p>If the service returns a constructor function, you can use the <code>construct()</code> convenience method:</p>
 
 <div class="highlight"><pre><span class="c1">//File: app/services/circle.js</span>
@@ -271,7 +273,7 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
   <span class="k">this</span><span class="p">.</span><span class="nx">radius</span> <span class="o">=</span> <span class="nx">radius</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="nx">Sum</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getArea</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="nx">Circle</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getArea</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">return</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nx">radius</span> <span class="o">*</span> <span class="nx">radius</span><span class="p">);</span>
 <span class="p">}</span>
 
