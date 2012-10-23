@@ -308,6 +308,27 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 <span class="kd">var</span> <span class="nx">env</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">env</span><span class="p">;</span>
 </pre></div>
 
+<h2>Error handling</h2>
+
+<p>Because Agni router is regular Connect middleware, you can pass errors to the <code>next</code> function, available inside controller functions as <code>this.next()</code>. This will trigger a 500 Internal Server Error and send the error message to stderr. HTML error pages are in the <code>views/errors</code> directory.</p>
+
+<p>Example:</p>
+
+<div class="highlight"><pre><span class="c1">//File: app/controllers/article.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">REST</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">().</span><span class="nx">findById</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span> <span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+
 <h2>Examples</h2>
 
 <h3>Hello world!</h3>
