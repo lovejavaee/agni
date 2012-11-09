@@ -90,7 +90,11 @@ available to the controller, freeing the latter from overload and duplication.</
 <li><p><code>controllers</code>, <code>models</code>, <code>services</code> and <code>views</code>, where you can store the modules belonging to the corresponding components.</p></li>
 <li><p><code>config</code>, which contains three files: <code>config.js</code>, with the application settings, <code>init.js</code>, where you can define middleware, and <code>server.js</code>, where you can set whether to run the server as a daemon (with forever) or not.</p></li>
 <li><p><code>public</code>, where you can put all your static resources like images, javascript files, style sheet and so on.</p></li>
-</ul><h2>Routing</h2>
+</ul><h3>File extensions</h3>
+
+<p>You can use the extensions <code>.controller.js</code>, <code>.model.js</code> and <code>.service.js</code> for more readable file names.</p>
+
+<h2>Routing</h2>
 
 <p>There is no explicit route definition in Agni. The routing mechanism is based on controller paths, function names and (optionally) HTTP methods.</p>
 
@@ -192,19 +196,6 @@ available to the controller, freeing the latter from overload and duplication.</
 </pre></div>
 
 <p>It will render the view <code>hello.html</code>.</p>
-
-<h3>Nesting views</h3>
-
-<p>To show a view inside a layout, do:</p>
-
-<div class="highlight"><pre><span class="k">this</span><span class="p">.</span><span class="nx">nest</span><span class="p">(</span><span class="s1">'viewName'</span><span class="p">,</span> <span class="nx">locals</span><span class="p">).</span><span class="nx">within</span><span class="p">(</span><span class="s1">'master'</span><span class="p">).</span><span class="nx">as</span><span class="p">(</span><span class="s1">'child'</span><span class="p">).</span><span class="nx">render</span><span class="p">();</span>
-</pre></div>
-
-<p>Where <code>.within()</code> sets the layout and <code>.as()</code> sets the name of the child view inside the layout.</p>
-
-<p>If you omit the view name, it will be the same as your controller module.</p>
-
-<p>If you omit <code>.within()</code> and <code>.as()</code>, they will default to <code>layout</code> and <code>content</code>, respectively.</p>
 
 <h2>Models</h2>
 
