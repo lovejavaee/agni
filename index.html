@@ -139,9 +139,9 @@ available to the controller, freeing the latter from overload and duplication.</
 <li><p><code>this.SESS</code> (cookie-based session)</p></li>
 <li><p><code>this.GET</code> (query string)</p></li>
 <li><p><code>this.POST</code> (request body)</p></li>
-</ul><h3>From REST to CRUD</h3>
+</ul><h3>Resourceful routing</h3>
 
-<p>You can easily map REST requests to CRUD operations, by setting the REST property in the controller.</p>
+<p>You can easily map requests to CRUD operations, by setting the REST property in the controller.</p>
 
 <p>Let's suppose we have a controller called <code>article</code>, which looks like this:</p>
 
@@ -168,15 +168,21 @@ available to the controller, freeing the latter from overload and duplication.</
 <span class="nx">exports</span><span class="p">.</span><span class="nx">del</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">//Delete</span>
 <span class="p">}</span>
+
+<span class="c1">//GET edit</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">edit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Edit</span>
+<span class="p">}</span>
 </pre></div>
 
-<p>The requests will be mapped according to the HTTP method:</p>
+<p>The requests will be mapped according to the HTTP method and the URI segments:</p>
 
 <ul>
 <li><p><code>GET /article/1</code> =&gt; <code>article.read(1)</code></p></li>
 <li><p><code>POST /article</code> =&gt; <code>article.create()</code></p></li>
 <li><p><code>PUT /article/1</code> =&gt; <code>article.update(1)</code></p></li>
 <li><p><code>DELETE /article/1</code> =&gt; <code>article.del(1)</code></p></li>
+<li><p><code>GET /article/edit/1</code> =&gt; <code>article.edit(1)</code></p></li>
 </ul><h2>Views</h2>
 
 <h3>Rendering a view</h3>
