@@ -96,56 +96,19 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <h2>Routing</h2>
 
-<p>There is no explicit route definition in Agni. The routing mechanism is based on controller paths, function names and (optionally) HTTP methods.</p>
+<p>There is no explicit route definition in Agni. The routing mechanism is based on controller paths, function names and HTTP methods.</p>
 
 <h2>Controllers</h2>
 
-<h3>The Controller as a router</h3>
+<p>Agni uses a hybrid routing system, based on both resourceful routes and segment-based routes.</p>
 
-<p>Agni uses a common routing system, similar to what is used in <a href="http://codeigniter.com/">CodeIgniter</a> and other popular frameworks.</p>
+<h3>Resourceful routing</h3>
 
-<p>If you split the requested URL in segments:</p>
-
-<p><code>mywebsite.com/module/function/arg1/arg2</code></p>
-
-<ol>
-<li><p>The first URL segment is the module that should be required.</p></li>
-<li><p>The second segment is the function that should be called.</p></li>
-<li><p>The third, and any other segments, are the arguments that should be passed to the function.</p></li>
-</ol><p>So, for example, a request to <code>mywebsite.com/article/show/173</code>, would require the <code>article</code> module from the <code>controllers</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
-
-<p>More or less equivalent to doing:</p>
-
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">article</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'./app/controllers/article'</span><span class="p">);</span>
-<span class="nx">article</span><span class="p">.</span><span class="nx">show</span><span class="p">(</span><span class="mi">173</span><span class="p">);</span>
-</pre></div>
-
-<p>If you omit the function name, it will look for a function called <code>nil</code> and execute it.</p>
-
-<p>For example, a request to <code>mywebsite.com/articles</code> will require the <code>articles</code> module and execute the <code>nil</code> function.</p>
-
-<p>You can create namespaces, by simply putting your controllers in sub-directories.</p>
-
-<p>For example, a request to <code>mywebsite.com/blog/article/show/173</code>, would require the article module from the <code>controllers/blog</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
-
-<h3>Controller properties</h3>
-
-<p>Inside controllers, you can access the standard <strong>request</strong> and <strong>response</strong> objects as <code>this.req</code> as <code>this.res</code>, respectively.</p>
-
-<p>For convenience, the following properties are also provided:</p>
-
-<ul>
-<li><p><code>this.cookies</code> (cookies)</p></li>
-<li><p><code>this.session</code> (cookie-based session)</p></li>
-<li><p><code>this.query</code> (query string)</p></li>
-<li><p><code>this.body</code> (request body)</p></li>
-</ul><h3>Resourceful routing</h3>
-
-<p>Agni has a minimalistic interpretation of resourceful routing. If it cannot find any action matching the URI segments, it looks for a CRUD action corresponding to the HTTP method of the request.</p>
+<p>Resourceful routing in Agni means simply mapping each HTTP method to a CRUD operation.</p>
 
 <p>Let's suppose we have a controller called <code>article</code>, which looks like this:</p>
 
-<div class="highlight"><pre><span class="c1">//File: app/controllers/article.js</span>
+<div class="highlight"><pre><span class="c1">//File: app/controllers/article.controller.js</span>
 
 <span class="c1">//GET</span>
 <span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
@@ -166,16 +129,67 @@ available to the controller, freeing the latter from overload and duplication.</
 <span class="nx">exports</span><span class="p">.</span><span class="nx">del</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">//Delete</span>
 <span class="p">}</span>
+</pre></div>
 
-<span class="cm">/* Custom actions... */</span>
-<span class="c1">//GET edit</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">edit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+<p>Here is how the requests will be mapped:</p>
 
+<ul>
+<li><p><code>GET /article/1</code> =&gt; <code>article.read(1)</code></p></li>
+<li><p><code>POST /article</code> =&gt; <code>article.create()</code></p></li>
+<li><p><code>PUT /article/1</code> =&gt; <code>article.update(1)</code></p></li>
+<li><p><code>DELETE /article/1</code> =&gt; <code>article.del(1)</code></p></li>
+</ul><p>If for some reason you want to disable resourceful routing, set the <code>resource</code> property to <code>false</code> in the controller.</p>
+
+<h3>Segment-based routes</h3>
+
+<p>Segment-based routes are similar to the system used in <a href="http://codeigniter.com/">CodeIgniter</a> and other popular frameworks.</p>
+
+<p>If you split the requested URL in segments:</p>
+
+<p><code>mywebsite.com/module/function/arg1/arg2</code></p>
+
+<ol>
+<li><p>The first URL segment is the module that should be required.</p></li>
+<li><p>The second segment is the function that should be called.</p></li>
+<li><p>The third, and any other segments, are the arguments that should be passed to the function.</p></li>
+</ol><p>So, for example, a request to <code>mywebsite.com/article/show/173</code>, would require the <code>article</code> module from the <code>controllers</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
+
+<p>More or less equivalent to doing:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">article</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'./app/controllers/article'</span><span class="p">);</span>
+<span class="nx">article</span><span class="p">.</span><span class="nx">show</span><span class="p">(</span><span class="mi">173</span><span class="p">);</span>
+</pre></div>
+
+<p>You can mix both routing system in the same file. For example, let's add two more methods to the previous <code>article</code> controller:</p>
+
+<div class="highlight"><pre><span class="c1">//File: app/controllers/article.controller.js</span>
+
+<span class="cm">/*Default CRUD actions*/</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Read</span>
 <span class="p">}</span>
 
-<span class="c1">//GET foo</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">//Create</span>
+<span class="p">}</span>
 
+<span class="nx">exports</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Update</span>
+<span class="p">}</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">del</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Delete</span>
+<span class="p">}</span>
+
+<span class="cm">/*User-defined actions*/</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">add</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">//Show new article form</span>
+<span class="p">}</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">edit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//Show article editing form</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -187,10 +201,25 @@ available to the controller, freeing the latter from overload and duplication.</
 <li><p><code>PUT /article/1</code> =&gt; <code>article.update(1)</code></p></li>
 <li><p><code>DELETE /article/1</code> =&gt; <code>article.del(1)</code></p></li>
 <li><p><code>GET /article/edit/1</code> =&gt; <code>article.edit(1)</code></p></li>
-<li><p><code>GET /article/foo</code> =&gt; <code>article.foo()</code></p></li>
-</ul><p>If for some reason you want to disable resourceful routing, set the <code>resource</code> property to <code>false</code> in the controller.</p>
+<li><p><code>GET /article/add</code> =&gt; <code>article.add()</code></p></li>
+</ul><h3>Namespaces</h3>
 
-<h2>Views</h2>
+<p>You can create namespaces, by simply putting your controllers in sub-directories.</p>
+
+<p>For example, a request to <code>mywebsite.com/blog/article/show/173</code>, would require the article module from the <code>controllers/blog</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
+
+<h3>Controller properties</h3>
+
+<p>Inside controllers, you can access the standard <strong>request</strong> and <strong>response</strong> objects as <code>this.req</code> as <code>this.res</code>, respectively.</p>
+
+<p>For convenience, the following properties are also provided:</p>
+
+<ul>
+<li><p><code>this.cookies</code> (cookies)</p></li>
+<li><p><code>this.session</code> (session)</p></li>
+<li><p><code>this.query</code> (query string)</p></li>
+<li><p><code>this.body</code> (request body)</p></li>
+</ul><h2>Views</h2>
 
 <h3>Rendering a view</h3>
 
@@ -200,9 +229,9 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <p>If you omit the view name, it will be the same as your controller module. For example, let's suppose you have a controller module called <code>hello</code>:</p>
 
-<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.js</span>
+<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.controller.js</span>
 
-<span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="c1">//This will render the view 'app/views/hello.html'</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
 <span class="p">}</span>
@@ -219,7 +248,7 @@ It will return the same object as <code>require(__dirname + '../models/' + model
 
 <p>Example:</p>
 
-<div class="highlight"><pre><span class="c1">//File: app/models/article.js</span>
+<div class="highlight"><pre><span class="c1">//File: app/models/article.model.js</span>
 
 <span class="nx">exports</span><span class="p">.</span><span class="nx">readArticle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">//Read article from DB</span>
@@ -231,7 +260,7 @@ It will return the same object as <code>require(__dirname + '../models/' + model
 
 <p>And in the controller:</p>
 
-<div class="highlight"><pre><span class="c1">//File: app/controllers/article.js</span>
+<div class="highlight"><pre><span class="c1">//File: app/controllers/article.controller.js</span>
 
 <span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
@@ -262,7 +291,7 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 
 <p>In the controller:</p>
 
-<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s1">'Hello'</span><span class="p">;</span>
   <span class="kd">var</span> <span class="nx">reversed</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'string_helpers'</span><span class="p">).</span><span class="nx">reverse</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">({</span><span class="nx">reversedHello</span><span class="o">:</span> <span class="nx">reversed</span><span class="p">});</span>
@@ -288,14 +317,14 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 
 <p>In the controller:</p>
 
-<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">area</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'circle'</span><span class="p">).</span><span class="nx">construct</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">getArea</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
 
 <p>which is equivalent to:</p>
 
-<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">Circle</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'circle'</span><span class="p">);</span>
   <span class="kd">var</span> <span class="nx">circle</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Circle</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
   <span class="kd">var</span> <span class="nx">area</span> <span class="o">=</span> <span class="nx">circle</span><span class="p">.</span><span class="nx">getArea</span><span class="p">();</span>
@@ -308,7 +337,7 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 
 <p>If you need the settings object in the global scope of a module, you can use the application instance which is exported by <code>/lib/agni.js</code>:</p>
 
-<div class="highlight"><pre><span class="c1">//File: app/models/foo.js</span>
+<div class="highlight"><pre><span class="c1">//File: app/models/foo.model.js</span>
 
 <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">'../../../lib/agni'</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">env</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">env</span><span class="p">;</span>
@@ -321,8 +350,6 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 <p>Example:</p>
 
 <div class="highlight"><pre><span class="c1">//File: app/controllers/article.js</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">REST</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 
 <span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
@@ -343,9 +370,9 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 
 <h4>Controller</h4>
 
-<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.js</span>
+<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.controller.js</span>
 
-<span class="nx">exports</span><span class="p">.</span><span class="nx">nil</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
