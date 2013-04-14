@@ -1,0 +1,5 @@
+---
+
+welcome:
+  route: get /
+  action: index.welcome
