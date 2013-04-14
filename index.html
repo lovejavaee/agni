@@ -234,7 +234,7 @@ It will return the same object as <code>require(__dirname + '../libraries/' + li
 
 <h2>Error handling</h2>
 
-<p>Because Agni router is regular Connect middleware, you can pass errors to the <code>next</code> function, available inside controller functions as <code>this.next</code>. This will trigger a 500 Internal Server Error and send the error message to stderr. HTML error pages are in the <code>views/errors</code> directory.</p>
+<p>Because Agni uses regular Connect middleware, you can pass errors to the <code>next</code> function, available inside controller functions as <code>this.next</code>. This will trigger a 500 Internal Server Error and send the error message to stderr. HTML error pages are in the <code>views/errors</code> directory.</p>
 
 <p>Example:</p>
 
