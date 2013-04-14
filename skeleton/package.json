@@ -5,11 +5,9 @@
   "private": true,
   "dependencies": {
     "express": "3.x",
-    "forever": "*",
-    "agni-framework": "1.x"
+    "agni-framework": "2.x"
   },
   "scripts": {
-    "start": "node ./server.js",
-    "stop": "node ./script/stop.js"
+    "start": "node ./server.js"
   }
 }

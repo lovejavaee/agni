@@ -1,13 +1,17 @@
 {
   "name": "agni",
   "description": "Command line utility for creating agni-framework applications",
-  "version": "1.0.0beta",
+  "version": "2.0.0beta",
   "author": "Lorenzo Tabacchini <lortabac@gmx.com>",
   "main": "./lib",
   "bin" : { "agni" : "./bin/agni.js" },
   "dependencies": {
     "commander": "*",
     "cpr": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lortabac/agni"
   },
   "keywords": [
     "framework",
