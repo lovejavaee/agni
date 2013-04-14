@@ -45,10 +45,9 @@
 
 <h2>Overview</h2>
 
-<p>Agni is a web framework built on top of Express, based on the principle
-of <em>convention over configuration</em>.</p>
+<p>Agni is a web framework built on top of Express.</p>
 
-<p>Its purpose is making access to the various components easier, so that you can forget about routes and paths and focus on what your application does.</p>
+<p>It adds a thin layer of abstraction which makes route definition and directory organization easier, without giving up the full power and flexibility of Express.</p>
 
 <p>It does not include any database abstraction system, but leaves this choice to the developer.</p>
 
@@ -62,151 +61,64 @@ of <em>convention over configuration</em>.</p>
 <li><p>Run the application: <code>npm start</code>.</p></li>
 <li><p>Point your browser to <code>localhost:3000</code>.</p></li>
 <li><p>If you see the welcome message, it works!</p></li>
-</ol><h2>Architecture</h2>
+</ol><h2>Directory structure</h2>
 
 <p>Agni is loosely based on the <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a>
 development pattern.</p>
-
-<p>The three main application components are:</p>
-
-<ul>
-<li><p>the <strong>Model</strong>, which is the data access layer;</p></li>
-<li><p>the <strong>View</strong>, which is the part of the application that is "visible" to the user;</p></li>
-<li><p>the <strong>Controller</strong>, which acts as an intermediary between the other two components,
-taking data from the Model and sending it to the View.</p></li>
-</ul><p>A fourth component is also available, that is the <strong>Service</strong> layer.
-The purpose of this layer is encapsulating business logic in a high level interface
-available to the controller, freeing the latter from overload and duplication.</p>
-
-<p>Of course, you are free to use only the components that you need. Agni does not oblige you to use Models and Services if you do not need them.</p>
-
-<h2>Directory structure</h2>
 
 <p>The root application directory is <code>app</code>.</p>
 
 <p>Inside <code>app</code>, you have the following directories:</p>
 
 <ul>
-<li><p><code>controllers</code>, <code>models</code>, <code>services</code> and <code>views</code>, where you can store the modules belonging to the corresponding components.</p></li>
-<li><p><code>config</code>, which contains three files: <code>config.js</code>, with the application settings, <code>init.js</code>, where you can define middleware, and <code>server.js</code>, where you can set whether to run the server as a daemon (with forever) or not.</p></li>
+<li><p><code>controllers</code>, <code>models</code>, and <code>views</code>, where you can store the modules belonging to the corresponding MVC components.</p></li>
+<li><p>an unopinionated <code>libraries</code> directory.</p></li>
+<li><p><code>config</code>, which contains three files: <code>config.js</code>, with the application settings, <code>middleware.js</code>, where you can define middleware, and <code>routes.yaml</code>.</p></li>
 <li><p><code>public</code>, where you can put all your static resources like images, javascript files, style sheet and so on.</p></li>
 </ul><h3>File extensions</h3>
 
-<p>You can use the extensions <code>.controller.js</code>, <code>.model.js</code> and <code>.service.js</code> for more readable file names.</p>
+<p>You can use the extensions <code>.controller.js</code>, <code>.model.js</code> and <code>.lib.js</code> for more readable file names.</p>
 
 <h2>Routing</h2>
 
-<p>There is no explicit route definition in Agni. The routing mechanism is based on controller paths, function names and HTTP methods.</p>
+<p>Routes are defined in YAML format, in the <code>app/config/routes.yaml</code> file (or alternatively as standard javascript objects, but you should rename the file to <em>route.js</em> in that case).</p>
+
+<p>Each route definition is composed of a label, one or more routes, and an action.</p>
+
+<div class="highlight"><pre><span class="nn">---</span>
+
+<span class="l-Scalar-Plain">label</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">route</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">verb /path</span>
+  <span class="l-Scalar-Plain">action</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">controller.action</span>
+</pre></div>
+
+<p>Routes are composed of 2 segments, separated by a space:</p>
+
+<ul>
+<li>an HTTP verb.</li>
+<li>a path.</li>
+</ul><p>Actions are composed of 2 segments, separated by a dot (<code>.</code>):</p>
+
+<ul>
+<li><p>the first segment is a relative path, based on the <code>app/controllers</code> directory. This module can either export a constructor function or individual functions through the <code>exports</code> object.</p></li>
+<li><p>the second segment can either be a prototype function or a function exported by the controller through the <code>exports</code> object.</p></li>
+</ul><p>Ex.:</p>
+
+<div class="highlight"><pre><span class="nn">---</span>
+
+<span class="l-Scalar-Plain">foo</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">route</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">get /foo</span>
+  <span class="l-Scalar-Plain">action</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">foo.index</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="c1">// app/controllers/foo.controller.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">index</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
 
 <h2>Controllers</h2>
-
-<p>Agni uses a hybrid routing system, based on both resourceful routes and segment-based routes.</p>
-
-<h3>Resourceful routing</h3>
-
-<p>Resourceful routing in Agni means simply mapping each HTTP method to a CRUD operation.</p>
-
-<p>Let's suppose we have a controller called <code>article</code>, which looks like this:</p>
-
-<div class="highlight"><pre><span class="c1">//File: app/controllers/article.controller.js</span>
-
-<span class="c1">//GET</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//Read</span>
-<span class="p">}</span>
-
-<span class="c1">//POST</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="c1">//Create</span>
-<span class="p">}</span>
-
-<span class="c1">//PUT</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//Update</span>
-<span class="p">}</span>
-
-<span class="c1">//DELETE</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">del</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//Delete</span>
-<span class="p">}</span>
-</pre></div>
-
-<p>Here is how the requests will be mapped:</p>
-
-<ul>
-<li><p><code>GET /article/1</code> =&gt; <code>article.read(1)</code></p></li>
-<li><p><code>POST /article</code> =&gt; <code>article.create()</code></p></li>
-<li><p><code>PUT /article/1</code> =&gt; <code>article.update(1)</code></p></li>
-<li><p><code>DELETE /article/1</code> =&gt; <code>article.del(1)</code></p></li>
-</ul><p>If for some reason you want to disable resourceful routing, set the <code>resource</code> property to <code>false</code> in the controller.</p>
-
-<h3>Segment-based routes</h3>
-
-<p>Segment-based routes are similar to the system used in <a href="http://codeigniter.com/">CodeIgniter</a> and other popular frameworks.</p>
-
-<p>If you split the requested URL in segments:</p>
-
-<p><code>mywebsite.com/module/function/arg1/arg2</code></p>
-
-<ol>
-<li><p>The first URL segment is the module that should be required.</p></li>
-<li><p>The second segment is the function that should be called.</p></li>
-<li><p>The third, and any other segments, are the arguments that should be passed to the function.</p></li>
-</ol><p>So, for example, a request to <code>mywebsite.com/article/show/173</code>, would require the <code>article</code> module from the <code>controllers</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
-
-<p>More or less equivalent to doing:</p>
-
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">article</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'./app/controllers/article'</span><span class="p">);</span>
-<span class="nx">article</span><span class="p">.</span><span class="nx">show</span><span class="p">(</span><span class="mi">173</span><span class="p">);</span>
-</pre></div>
-
-<p>You can mix both routing system in the same file. For example, let's add two more methods to the previous <code>article</code> controller:</p>
-
-<div class="highlight"><pre><span class="c1">//File: app/controllers/article.controller.js</span>
-
-<span class="cm">/*Default CRUD actions*/</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//Read</span>
-<span class="p">}</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="c1">//Create</span>
-<span class="p">}</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//Update</span>
-<span class="p">}</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">del</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//Delete</span>
-<span class="p">}</span>
-
-<span class="cm">/*User-defined actions*/</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">add</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="c1">//Show new article form</span>
-<span class="p">}</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">edit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//Show article editing form</span>
-<span class="p">}</span>
-</pre></div>
-
-<p>Here is how the requests will be mapped:</p>
-
-<ul>
-<li><p><code>GET /article/1</code> =&gt; <code>article.read(1)</code></p></li>
-<li><p><code>POST /article</code> =&gt; <code>article.create()</code></p></li>
-<li><p><code>PUT /article/1</code> =&gt; <code>article.update(1)</code></p></li>
-<li><p><code>DELETE /article/1</code> =&gt; <code>article.del(1)</code></p></li>
-<li><p><code>GET /article/edit/1</code> =&gt; <code>article.edit(1)</code></p></li>
-<li><p><code>GET /article/add</code> =&gt; <code>article.add()</code></p></li>
-</ul><h3>Namespaces</h3>
-
-<p>You can create namespaces, by simply putting your controllers in sub-directories.</p>
-
-<p>For example, a request to <code>mywebsite.com/blog/article/show/173</code>, would require the article module from the <code>controllers/blog</code> folder, and execute the exported function <code>show</code> with <code>173</code> as parameter.</p>
 
 <h3>Controller properties</h3>
 
@@ -219,7 +131,25 @@ available to the controller, freeing the latter from overload and duplication.</
 <li><p><code>this.session</code> (session)</p></li>
 <li><p><code>this.query</code> (query string)</p></li>
 <li><p><code>this.body</code> (request body)</p></li>
-</ul><h2>Views</h2>
+</ul><h3>Controller methods</h3>
+
+<p>Inside controllers you also have a <code>this.url</code> method, which helps you build URLs from route labels and arguments.</p>
+
+<p><code>url(label, arg1, arg2, ...)</code> or <code>url(label, argsArray)</code></p>
+
+<p>Ex.:</p>
+
+<div class="highlight"><pre><span class="l-Scalar-Plain">firstPage</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">route</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/home</span>
+  <span class="l-Scalar-Plain">action</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">home.index</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="nx">FooController</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">redirectToHome</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">(</span><span class="s1">'firstPage'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">,</span> <span class="s1">'baz'</span><span class="p">));</span><span class="c1">// Redirects to /home/bar/baz</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Views</h2>
 
 <h3>Rendering a view</h3>
 
@@ -231,31 +161,31 @@ available to the controller, freeing the latter from overload and duplication.</
 
 <div class="highlight"><pre><span class="c1">//File: app/controllers/hello.controller.js</span>
 
-<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="c1">//This will render the view 'app/views/hello.html'</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">index</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">//This will render the view 'app/views/hello.jade'</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
 
-<p>It will render the view <code>hello.html</code>.</p>
-
 <h2>Models</h2>
 
-<p>To access a model, you can use <code>this.model(modelName)</code> from any controller or service function.
+<p>To access a model, you can use <code>this.model(modelName)</code> from any controller or library.
 It will return the same object as <code>require(__dirname + '../models/' + modelName)</code>.</p>
-
-<p>If you omit the name, it will be the same as your controller module.</p>
 
 <p>Example:</p>
 
 <div class="highlight"><pre><span class="c1">//File: app/models/article.model.js</span>
 
-<span class="nx">exports</span><span class="p">.</span><span class="nx">readArticle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//Read article from DB</span>
-  <span class="c1">//...</span>
-
-  <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">articleData</span><span class="p">);</span>
+<span class="kd">function</span> <span class="nx">ArticleModel</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">db</span> <span class="o">=</span> <span class="nx">getMyDb</span><span class="p">();</span>
 <span class="p">}</span>
+
+<span class="nx">ArticleModel</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getArticle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Read article from DB</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nx">findArticleById</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">ArticleModel</span><span class="p">;</span>
 </pre></div>
 
 <p>And in the controller:</p>
@@ -265,7 +195,9 @@ It will return the same object as <code>require(__dirname + '../models/' + model
 <span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 
-  <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">().</span><span class="nx">readArticle</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">ArticleModel</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">(</span><span class="s1">'article'</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">articleModel</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArticleModel</span><span class="p">();</span>
+  <span class="nx">articleModel</span><span class="p">.</span><span class="nx">getArticle</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span><span class="p">(</span><span class="o">!</span> <span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">self</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'read_article'</span><span class="p">,</span> <span class="p">{</span><span class="nx">articleData</span><span class="o">:</span> <span class="nx">data</span><span class="p">});</span>
     <span class="p">}</span>
@@ -273,16 +205,14 @@ It will return the same object as <code>require(__dirname + '../models/' + model
 <span class="p">}</span>
 </pre></div>
 
-<h2>Services</h2>
+<h2>Libraries</h2>
 
-<p>To access a service, you can use <code>this.service(serviceName)</code> from any controller or service function.
-It will return the same object as <code>require(__dirname + '../services/' + serviceName)</code>.</p>
-
-<p>If you omit the name, it will be the same as your controller module.</p>
+<p>To access a library, you can use <code>this.lib(libraryName)</code> from any controller or library.
+It will return the same object as <code>require(__dirname + '../libraries/' + libraryName)</code>.</p>
 
 <p>Example:</p>
 
-<div class="highlight"><pre><span class="c1">//File: app/services/string_helpers.js</span>
+<div class="highlight"><pre><span class="c1">//File: app/libraries/string_helpers.js</span>
 
 <span class="nx">exports</span><span class="p">.</span><span class="nx">reverse</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
@@ -293,59 +223,18 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 
 <div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s1">'Hello'</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">reversed</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'string_helpers'</span><span class="p">).</span><span class="nx">reverse</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">reversed</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">lib</span><span class="p">(</span><span class="s1">'string_helpers'</span><span class="p">).</span><span class="nx">reverse</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">({</span><span class="nx">reversedHello</span><span class="o">:</span> <span class="nx">reversed</span><span class="p">});</span>
-<span class="p">}</span>
-</pre></div>
-
-<h3>Service constructor</h3>
-
-<p>If the service returns a constructor function, you can use the <code>construct()</code> convenience method:</p>
-
-<div class="highlight"><pre><span class="c1">//File: app/services/circle.js</span>
-
-<span class="kd">function</span> <span class="nx">Circle</span><span class="p">(</span><span class="nx">radius</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">radius</span> <span class="o">=</span> <span class="nx">radius</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nx">Circle</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getArea</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="k">this</span><span class="p">.</span><span class="nx">radius</span> <span class="o">*</span> <span class="k">this</span><span class="p">.</span><span class="nx">radius</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Circle</span><span class="p">;</span>
-</pre></div>
-
-<p>In the controller:</p>
-
-<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">area</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'circle'</span><span class="p">).</span><span class="nx">construct</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">getArea</span><span class="p">();</span>
-<span class="p">}</span>
-</pre></div>
-
-<p>which is equivalent to:</p>
-
-<div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">Circle</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">(</span><span class="s1">'circle'</span><span class="p">);</span>
-  <span class="kd">var</span> <span class="nx">circle</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Circle</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
-  <span class="kd">var</span> <span class="nx">area</span> <span class="o">=</span> <span class="nx">circle</span><span class="p">.</span><span class="nx">getArea</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
 
 <h2>Configuration</h2>
 
-<p>In all controller, model and service functions you can access the Express <code>app.settings</code> object as <code>this.settings</code>.</p>
-
-<p>If you need the settings object in the global scope of a module, you can use the application instance which is exported by <code>/lib/agni.js</code>:</p>
-
-<div class="highlight"><pre><span class="c1">//File: app/models/foo.model.js</span>
-
-<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">'../../../lib/agni'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">env</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">env</span><span class="p">;</span>
-</pre></div>
+<p>In all controller, model and library functions you can access the Express <code>app.settings</code> object as <code>this.settings</code>.</p>
 
 <h2>Error handling</h2>
 
-<p>Because Agni router is regular Connect middleware, you can pass errors to the <code>next</code> function, available inside controller functions as <code>this.next()</code>. This will trigger a 500 Internal Server Error and send the error message to stderr. HTML error pages are in the <code>views/errors</code> directory.</p>
+<p>Because Agni router is regular Connect middleware, you can pass errors to the <code>next</code> function, available inside controller functions as <code>this.next</code>. This will trigger a 500 Internal Server Error and send the error message to stderr. HTML error pages are in the <code>views/errors</code> directory.</p>
 
 <p>Example:</p>
 
@@ -354,7 +243,7 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
 <span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 
-  <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">().</span><span class="nx">findArticleById</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">(</span><span class="s1">'article'</span><span class="p">).</span><span class="nx">getArticle</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span><span class="p">(</span><span class="o">!</span> <span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">self</span><span class="p">.</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -363,57 +252,6 @@ It will return the same object as <code>require(__dirname + '../services/' + ser
   <span class="p">});</span>
 <span class="p">}</span>
 </pre></div>
-
-<h2>Examples</h2>
-
-<h3>Hello world!</h3>
-
-<h4>Controller</h4>
-
-<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.controller.js</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
-<span class="p">}</span>
-</pre></div>
-
-<h4>View</h4>
-
-<div class="highlight"><pre><span class="c">&lt;!-- File: app/views/hello.html --&gt;</span>
-
-<span class="nt">&lt;p&gt;</span>Hello world!<span class="nt">&lt;/p&gt;</span>
-</pre></div>
-
-<p>Open the page <code>localhost:3000/hello</code>.</p>
-
-<p>That's it!</p>
-
-<h3>What's your name?</h3>
-
-<h4>Controller</h4>
-
-<div class="highlight"><pre><span class="c1">//File: app/controllers/hello.js</span>
-
-<span class="nx">exports</span><span class="p">.</span><span class="nx">myNameIs</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">locals</span> <span class="o">=</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">name</span><span class="p">}</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'my_name_is'</span><span class="p">,</span> <span class="nx">locals</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-
-<h4>View</h4>
-
-<pre><code>&lt;!-- File: app/views/my_name_is.html --&gt;
-&lt;!-- Example with template engine ejs --&gt;
-
-&lt;p&gt;Hello, &lt;%= name %&gt;.&lt;/p&gt;
-&lt;p&gt;Nice to meet you!&lt;/p&gt;
-</code></pre>
-
-<p>Now point your browser to <code>localhost:3000/hello/my-name-is/John</code>, and see the output.</p>
-
-<p>Please note how function names are automatically converted to camelCase.</p>
-
-<p>Sorry if your name is not John :)</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/lortabac">lortabac</a></p>
