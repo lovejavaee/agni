@@ -167,6 +167,17 @@ development pattern.</p>
 <span class="p">}</span>
 </pre></div>
 
+<h3>View functions</h3>
+
+<p>Inside views, you can use the <code>url</code> function to build URLs from route labels.</p>
+
+<p>Ex.:</p>
+
+<div class="highlight"><pre><span class="nx">a</span><span class="p">(</span><span class="nx">href</span><span class="o">=</span><span class="s1">'#{url("firstPage", "bar", "baz")}'</span><span class="p">)</span>
+</pre></div>
+
+<p>See the <a href="#controllers">Controller methods</a> paragraph for more details.</p>
+
 <h2>Models</h2>
 
 <p>To access a model, you can use <code>this.model(modelName)</code> from any controller or library.
